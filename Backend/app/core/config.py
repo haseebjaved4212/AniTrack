@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     REDIS_URL: str
     SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
     JIKAN_API_BASE_URL: str = "https://api.jikan.moe/v4"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
