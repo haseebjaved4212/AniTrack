@@ -1,11 +1,12 @@
 from redis.asyncio import Redis
 from app.core.config import settings
 import logging
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 class RedisCache:
-    client: Redis = None
+    client: Optional[Redis] = None
 
     @classmethod
     async def connect(cls):
