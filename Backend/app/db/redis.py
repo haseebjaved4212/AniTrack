@@ -5,7 +5,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-class RedisCache
+class RedisCache:
     client: Optional[Redis] = None
 
     @classmethod

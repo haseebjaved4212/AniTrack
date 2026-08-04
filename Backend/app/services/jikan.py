@@ -38,8 +38,8 @@ def _transform_jikan_anime(item: dict) -> dict:
         "score": item.get("score"),
     }
 
-async def search_anime(query: str) -> AnimeSearchResponse:
-    cache_key = f"anime:search:{query.lower()}"
+async def search_anime(query: str, page: int = 1) -> AnimeSearchResponse:
+    cache_key = f"anime:search:{query.lower()}:page:{page}"
     
     if redis_cache.client:
         cached_data = await redis_cache.client.get(cache_key)
@@ -47,11 +47,12 @@ async def search_anime(query: str) -> AnimeSearchResponse:
             return AnimeSearchResponse(**json.loads(cached_data))
 
     url = f"{settings.JIKAN_API_BASE_URL}/anime"
-    params = {"q": query, "limit": 10}
+    params = {"q": query, "limit": 10, "page": page}
     
     data = await _fetch_with_retries(url, params=params)
     
     transformed_data = {
+        "pagination": data.get("pagination"),
         "data": [_transform_jikan_anime(item) for item in data.get("data", [])]
     }
     

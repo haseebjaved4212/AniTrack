@@ -13,5 +13,12 @@ class AnimeJikanBase(BaseModel):
 class AnimeJikanResponse(BaseModel):
     data: AnimeJikanBase
 
+class JikanPagination(BaseModel):
+    last_visible_page: int
+    has_next_page: bool
+    current_page: int
+    items: dict
+
 class AnimeSearchResponse(BaseModel):
+    pagination: Optional[JikanPagination] = None
     data: List[AnimeJikanBase]
