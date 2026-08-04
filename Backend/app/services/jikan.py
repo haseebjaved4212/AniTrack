@@ -18,8 +18,8 @@ async def _fetch_with_retries(url: str, params: dict = None, retries: int = 3) -
             
             if response.status_code == 200:
                 return response.json()
-            elif response.status_code == 429:
-                logger.warning(f"Jikan API rate limit hit. Retrying in {attempt + 1} seconds...")
+            elif response.status_code in [429, 500, 502, 503, 504]:
+                logger.warning(f"Jikan API error {response.status_code}. Retrying in {attempt + 1} seconds...")
                 await asyncio.sleep(attempt + 1)
             else:
                 response.raise_for_status()
