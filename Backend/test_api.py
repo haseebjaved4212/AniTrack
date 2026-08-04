@@ -7,7 +7,7 @@ BASE_URL = "http://127.0.0.1:8000"
 async def test_api():
     print("Starting End-to-End API Test...")
     
-    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+    async with httpx.AsyncClient(base_url=BASE_URL, timeout=30.0) as client:
         # 1. Health Check
         print("\n--- 1. Testing Health Check ---")
         res = await client.get("/health")
