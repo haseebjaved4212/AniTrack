@@ -8,12 +8,13 @@ router = APIRouter()
 
 @router.get("/search", response_model=AnimeSearchResponse)
 async def search_anime(
-    q: str = Query(..., min_length=3, description="Search query for anime")
+    q: str = Query(..., min_length=3, description="Search query for anime"),
+    page: int = Query(1, ge=1, description="Page number")
 ) -> Any:
     """
     Search for anime using the Jikan API. Results are cached in Redis.
     """
-    return await jikan.search_anime(q)
+    return await jikan.search_anime(q, page=page)
 
 @router.get("/{id}", response_model=AnimeJikanResponse)
 async def get_anime(

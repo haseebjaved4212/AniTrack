@@ -24,13 +24,15 @@ async def add_entry(
 @router.get("", response_model=List[EntryResponse])
 async def get_entries(
     status_filter: Optional[str] = Query(None, alias="status", description="Filter by status (Watching, Completed, etc.)"),
+    skip: int = Query(0, ge=0, description="Skip entries for pagination"),
+    limit: int = Query(50, ge=1, le=100, description="Limit entries for pagination"),
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_user)
 ):
     """
     Get all anime list entries for the current user.
     """
-    return await entry_service.get_user_entries(db, user_id=current_user.id, status_filter=status_filter)
+    return await entry_service.get_user_entries(db, user_id=current_user.id, status_filter=status_filter, skip=skip, limit=limit)
 
 @router.patch("/{mal_id}", response_model=EntryResponse)
 async def update_entry(

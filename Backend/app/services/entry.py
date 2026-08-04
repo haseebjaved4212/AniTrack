@@ -77,12 +77,13 @@ async def add_anime_entry(db: AsyncSession, user_id: int, mal_id: int, entry_in:
     )
     return result.scalars().first()
 
-async def get_user_entries(db: AsyncSession, user_id: int, status_filter: Optional[str] = None) -> List[UserAnimeEntry]:
+async def get_user_entries(db: AsyncSession, user_id: int, status_filter: Optional[str] = None, skip: int = 0, limit: int = 50) -> List[UserAnimeEntry]:
     query = select(UserAnimeEntry).options(selectinload(UserAnimeEntry.anime)).filter(UserAnimeEntry.user_id == user_id)
     
     if status_filter:
         query = query.filter(UserAnimeEntry.status == status_filter)
         
+    query = query.offset(skip).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -117,3 +118,39 @@ async def remove_anime_entry(db: AsyncSession, user_id: int, mal_id: int) -> boo
     await db.delete(entry)
     await db.commit()
     return True
+
+from sqlalchemy import func
+
+async def get_user_stats(db: AsyncSession, user_id: int) -> dict:
+    # 1. Total anime watched
+    total_query = select(func.count(UserAnimeEntry.id)).filter(UserAnimeEntry.user_id == user_id)
+    total_result = await db.execute(total_query)
+    total_anime = total_result.scalar() or 0
+
+    # 2. Total episodes watched (sum of progress)
+    episodes_query = select(func.sum(UserAnimeEntry.progress)).filter(UserAnimeEntry.user_id == user_id)
+    episodes_result = await db.execute(episodes_query)
+    total_episodes = episodes_result.scalar() or 0
+
+    # 3. Average rating
+    rating_query = select(func.avg(UserAnimeEntry.rating)).filter(
+        UserAnimeEntry.user_id == user_id, 
+        UserAnimeEntry.rating.isnot(None)
+    )
+    rating_result = await db.execute(rating_query)
+    average_rating = rating_result.scalar()
+    average_rating = round(float(average_rating), 2) if average_rating else 0.0
+
+    # 4. Status distribution
+    status_query = select(UserAnimeEntry.status, func.count(UserAnimeEntry.id)).filter(
+        UserAnimeEntry.user_id == user_id
+    ).group_by(UserAnimeEntry.status)
+    status_result = await db.execute(status_query)
+    status_distribution = {row[0]: row[1] for row in status_result.all()}
+
+    return {
+        "total_anime": total_anime,
+        "total_episodes": total_episodes,
+        "average_rating": average_rating,
+        "status_distribution": status_distribution
+    }
