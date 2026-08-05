@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-neutral-900 via-neutral-900 to-transparent lg:static lg:h-auto lg:w-auto lg:bg-none">
+        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-linear-to-t from-neutral-900 via-neutral-900 to-transparent lg:static lg:h-auto lg:w-auto lg:bg-none">
           {user ? (
             <div className="flex flex-col items-center gap-4 text-center lg:items-start lg:text-left">
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
@@ -47,7 +47,7 @@ export default function Home() {
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
                 Track your anime journey
               </h1>
-              <p className="text-lg text-neutral-400 max-w-[600px]">
+              <p className="text-lg text-neutral-400 max-w-150">
                 AniTrack is a modern anime tracking application built with Next.js and FastAPI.
               </p>
               <div className="flex gap-4">
