@@ -19,7 +19,14 @@ export async function loginAction(formData: FormData) {
 
         return { success: true };
     } catch (error: any) {
-        return { success: false, error: error?.data?.detail || "Invalid credentials" };
+        console.error("Login Action Error:", error);
+        let errorMsg = "Invalid credentials";
+        if (error?.data?.detail) {
+            errorMsg = typeof error.data.detail === "string" ? error.data.detail : JSON.stringify(error.data.detail);
+        } else if (error?.message) {
+            errorMsg = error.message;
+        }
+        return { success: false, error: errorMsg };
     }
 }
 
@@ -28,7 +35,14 @@ export async function registerAction(data: any) {
         await ApiClient.post("/auth/register", data);
         return { success: true };
     } catch (error: any) {
-        return { success: false, error: error?.data?.detail || "Registration failed" };
+        console.error("Register Action Error:", error);
+        let errorMsg = "Registration failed";
+        if (error?.data?.detail) {
+            errorMsg = typeof error.data.detail === "string" ? error.data.detail : JSON.stringify(error.data.detail);
+        } else if (error?.message) {
+            errorMsg = error.message;
+        }
+        return { success: false, error: errorMsg };
     }
 }
 
