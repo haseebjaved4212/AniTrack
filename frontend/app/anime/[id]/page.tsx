@@ -1,24 +1,40 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "@/lib/api";
 import { Anime } from "@/types/api";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2, Star, ArrowLeft, Plus } from "lucide-react";
+import { Loader2, Star, ArrowLeft, Plus, Check } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import { useState } from "react";
 
 export default function AnimeDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [added, setAdded] = useState(false);
 
   const { data: anime, isLoading, error } = useQuery({
     queryKey: ["anime", id],
     queryFn: () => ApiClient.get<Anime>(`/anime/${id}`),
     enabled: !!id,
+  });
+
+  const { mutate: addToList, isPending: isAdding } = useMutation({
+    mutationFn: () =>
+      ApiClient.post(`/entries/${id}`, {
+        status: "Plan to Watch",
+        progress: 0,
+      }),
+    onSuccess: () => {
+      setAdded(true);
+      // Invalidate the entries list so the dashboard refreshes
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+    },
   });
 
   if (isLoading) {
@@ -124,9 +140,23 @@ export default function AnimeDetailPage() {
 
             <div className="mt-10">
               {user ? (
-                <button className="flex items-center gap-2 rounded-lg bg-blue-600 px-8 py-3.5 font-bold text-white transition-all hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-600/20 active:scale-95">
-                  <Plus className="h-5 w-5" />
-                  Add to My List
+                <button 
+                  onClick={() => addToList()}
+                  disabled={isAdding || added}
+                  className={`flex items-center gap-2 rounded-lg px-8 py-3.5 font-bold text-white transition-all ${
+                    added 
+                      ? "bg-green-600 hover:bg-green-500"
+                      : "bg-blue-600 hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-600/20 active:scale-95"
+                  } disabled:opacity-75 disabled:active:scale-100`}
+                >
+                  {isAdding ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : added ? (
+                    <Check className="h-5 w-5" />
+                  ) : (
+                    <Plus className="h-5 w-5" />
+                  )}
+                  {added ? "Added to List" : "Add to My List"}
                 </button>
               ) : (
                 <Link href="/login" className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-8 py-3.5 font-bold text-white transition-all hover:bg-blue-500">
