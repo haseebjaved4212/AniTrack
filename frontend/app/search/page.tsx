@@ -21,6 +21,7 @@ export default function SearchPage() {
       });
     },
     enabled: debouncedSearch.trim().length > 0,
+    retry: false,
   });
 
   return (
