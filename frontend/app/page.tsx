@@ -29,14 +29,20 @@ export default function Home() {
               </p>
               <div className="flex gap-4">
                 <Link
-                  href="/my-list"
+                  href="/search"
                   className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-500"
                 >
-                  Go to My List
+                  Search Anime
+                </Link>
+                <Link
+                  href="/my-list"
+                  className="rounded-lg border border-neutral-700 bg-neutral-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-neutral-800"
+                >
+                  My List
                 </Link>
                 <button
                   onClick={logout}
-                  className="rounded-lg border border-neutral-700 bg-neutral-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-neutral-800"
+                  className="rounded-lg border border-red-900/50 bg-neutral-900 px-6 py-3 font-semibold text-red-400 transition-colors hover:bg-red-950/50"
                 >
                   Log out
                 </button>
@@ -47,13 +53,19 @@ export default function Home() {
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
                 Track your anime journey
               </h1>
-              <p className="text-lg text-neutral-400 max-w-150">
+              <p className="text-lg text-neutral-400 max-w-[600px]">
                 AniTrack is a modern anime tracking application built with Next.js and FastAPI.
               </p>
               <div className="flex gap-4">
                 <Link
-                  href="/login"
+                  href="/search"
                   className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-500"
+                >
+                  Search Anime
+                </Link>
+                <Link
+                  href="/login"
+                  className="rounded-lg border border-neutral-700 bg-neutral-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-neutral-800"
                 >
                   Sign In
                 </Link>
