@@ -24,7 +24,9 @@ async def _fetch_with_retries(url: str, params: dict = None, retries: int = 3) -
             else:
                 response.raise_for_status()
                 
-        raise Exception("Failed to fetch from Jikan API after multiple retries due to rate limits")
+        # Instead of crashing the backend on rate limit, log it and return empty data
+        logger.error("Failed to fetch from Jikan API after multiple retries due to rate limits")
+        return {"data": [], "pagination": {"has_next_page": False, "current_page": 1, "items": {"count": 0, "total": 0, "per_page": 10}}}
 
 def _transform_jikan_anime(item: dict) -> dict:
     """Helper to transform the messy Jikan response into our clean schema"""
