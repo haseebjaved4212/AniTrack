@@ -27,7 +27,7 @@ export default function Home() {
               <p className="text-lg text-neutral-400">
                 You are securely logged in with HTTP-Only cookies.
               </p>
-              <div className="flex gap-4">
+              <div className="flex gap-4 flex-wrap justify-center lg:justify-start">
                 <Link
                   href="/search"
                   className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-500"
@@ -39,6 +39,12 @@ export default function Home() {
                   className="rounded-lg border border-neutral-700 bg-neutral-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-neutral-800"
                 >
                   My List
+                </Link>
+                <Link
+                  href="/stats"
+                  className="rounded-lg border border-neutral-700 bg-neutral-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-neutral-800"
+                >
+                  Stats
                 </Link>
                 <button
                   onClick={logout}
