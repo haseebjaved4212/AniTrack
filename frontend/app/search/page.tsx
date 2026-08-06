@@ -7,6 +7,7 @@ import { ApiClient } from "@/lib/api";
 import { AnimeSearchResponse } from "@/types/api";
 import { AnimeCard } from "@/components/AnimeCard";
 import { Search, Loader2 } from "lucide-react";
+import { AnimeGridSkeleton } from "@/components/Skeletons";
 
 export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,9 +54,7 @@ export default function SearchPage() {
         {/* Results Area */}
         <div className="min-h-[400px]">
           {isLoading && debouncedSearch.trim() !== "" ? (
-            <div className="flex h-64 items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-            </div>
+            <AnimeGridSkeleton />
           ) : error ? (
             <div className="flex h-64 items-center justify-center text-red-500">
               <p>Failed to load search results. Please try again.</p>

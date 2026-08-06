@@ -9,6 +9,7 @@ import { Loader2, Star, ArrowLeft, Plus, Check } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function AnimeDetailPage() {
   const params = useParams();
@@ -32,9 +33,13 @@ export default function AnimeDetailPage() {
       }),
     onSuccess: () => {
       setAdded(true);
+      toast.success(`${anime?.title} added to your list!`);
       // Invalidate the entries list so the dashboard refreshes
       queryClient.invalidateQueries({ queryKey: ["entries"] });
     },
+    onError: (err: any) => {
+      toast.error(err?.data?.detail || "Failed to add anime.");
+    }
   });
 
   if (isLoading) {

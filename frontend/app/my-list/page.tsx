@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ApiClient } from "@/lib/api";
 import { UserAnimeEntry } from "@/types/api";
 import { ListEntryCard } from "@/components/ListEntryCard";
+import { ListEntrySkeleton } from "@/components/Skeletons";
 import { useAuth } from "@/components/AuthProvider";
 import { Loader2, LayoutList } from "lucide-react";
 import Link from "next/link";
@@ -89,8 +90,11 @@ export default function MyListPage() {
         {/* List Content */}
         <div className="min-h-[400px]">
           {isLoading ? (
-            <div className="flex h-64 items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <div className="flex flex-col gap-4">
+              <ListEntrySkeleton />
+              <ListEntrySkeleton />
+              <ListEntrySkeleton />
+              <ListEntrySkeleton />
             </div>
           ) : error ? (
             <div className="flex h-64 items-center justify-center rounded-xl border border-red-900/50 bg-red-500/10 text-red-500">

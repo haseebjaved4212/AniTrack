@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { UserAnimeEntry } from "@/types/api";
 import { Star, Plus, Trash2, Loader2, Minus } from "lucide-react";
+import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "@/lib/api";
 
@@ -39,11 +40,15 @@ export function ListEntryCard({ entry }: ListEntryCardProps) {
 
       return { previousEntries };
     },
+    onSuccess: () => {
+      toast.success("Entry updated");
+    },
     onError: (err, newEntry, context) => {
       // Rollback on error
       if (context?.previousEntries) {
         queryClient.setQueryData(["entries"], context.previousEntries);
       }
+      toast.error("Failed to update entry");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["entries"] });
@@ -53,21 +58,25 @@ export function ListEntryCard({ entry }: ListEntryCardProps) {
   });
 
   const { mutate: deleteEntry, isPending: isDeleting } = useMutation({
-    mutationFn: () => ApiClient.delete(`/entries/${entry.anime_id}`),
+    mutationFn: () => ApiClient.delete(`/user/anime-list/${entry.id}`),
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["entries"] });
       const previousEntries = queryClient.getQueryData<UserAnimeEntry[]>(["entries"]);
       if (previousEntries) {
         queryClient.setQueryData<UserAnimeEntry[]>(["entries"], (old) =>
-          old?.filter((item) => item.anime_id !== entry.anime_id)
+          old?.filter((item) => item.id !== entry.id)
         );
       }
       return { previousEntries };
+    },
+    onSuccess: () => {
+      toast.success("Entry removed");
     },
     onError: (err, variables, context) => {
       if (context?.previousEntries) {
         queryClient.setQueryData(["entries"], context.previousEntries);
       }
+      toast.error("Failed to remove entry");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["entries"] });
