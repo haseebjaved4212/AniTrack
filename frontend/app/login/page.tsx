@@ -43,7 +43,7 @@ export default function LoginPage() {
       await refreshUser(); // Fetch user data to populate auth context
       router.push("/");
     } else {
-      setError(result.error);
+      setError(result.error || "An unknown error occurred");
     }
   };
 

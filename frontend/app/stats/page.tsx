@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ApiClient } from "@/lib/api";
-import { UserStats } from "@/types/api";
+import { Stats } from "@/types/api";
 import { useAuth } from "@/components/AuthProvider";
 import { Loader2, LayoutList, Star, PlayCircle, BarChart3 } from "lucide-react";
 import Link from "next/link";
@@ -21,7 +21,7 @@ export default function StatsPage() {
 
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ["stats"],
-    queryFn: () => ApiClient.get<UserStats>("/users/me/stats"),
+    queryFn: () => ApiClient.get<Stats>("/users/me/stats"),
     enabled: !!user,
   });
 
@@ -39,7 +39,7 @@ export default function StatsPage() {
   }
 
   // Format data for Recharts
-  const pieData = stats ? Object.entries(stats.status_distribution).map(([name, value]) => ({
+  const pieData = stats ? (Object.entries(stats.status_distribution) as [string, number][]).map(([name, value]) => ({
     name,
     value,
   })).filter(entry => entry.value > 0) : [];
@@ -120,7 +120,7 @@ export default function StatsPage() {
             {pieData.length > 0 && (
               <div className="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-6 md:col-span-2 lg:col-span-3">
                 <h3 className="mb-6 text-lg font-semibold text-white">Status Breakdown</h3>
-                <div className="h-[300px] w-full">
+                <div className="h-75 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie

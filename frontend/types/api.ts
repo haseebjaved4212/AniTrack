@@ -16,16 +16,25 @@ export interface Anime {
     score: number | null;
 }
 
+export interface AnimeBase {
+    id: number;
+    title: string;
+    image_url: string | null;
+    episodes: number | null;
+    status: string | null;
+    score: number | null;
+}
+
 export interface UserAnimeEntry {
-    mal_id: number;
+    id: number;
     user_id: number;
+    anime_id: number;
     status: string;
-    progress: number;
     rating: number | null;
+    progress: number;
     notes: string | null;
-    added_at: string;
     updated_at: string;
-    anime?: Anime; // Attached when fetching entries
+    anime: AnimeBase;
 }
 
 export interface Stats {

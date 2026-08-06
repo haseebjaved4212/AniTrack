@@ -46,7 +46,7 @@ export default function RegisterPage() {
     });
     
     if (!regResult.success) {
-      setError(regResult.error);
+      setError(regResult.error || "An unknown error occurred");
       return;
     }
 
@@ -54,14 +54,14 @@ export default function RegisterPage() {
     const formData = new FormData();
     formData.append("username", data.username);
     formData.append("password", data.password);
-
+    
     const loginResult = await loginAction(formData);
     
     if (loginResult.success) {
       await refreshUser();
       router.push("/");
     } else {
-      // Unlikely, but if login fails after registration
+      setError(loginResult.error || "An unknown error occurred");
       router.push("/login");
     }
   };
