@@ -26,7 +26,7 @@ async def _fetch_with_retries(url: str, params: dict = None, retries: int = 3) -
                 
         # Instead of crashing the backend on rate limit, log it and return empty data
         logger.error("Failed to fetch from Jikan API after multiple retries due to rate limits")
-        return {"data": [], "pagination": {"has_next_page": False, "current_page": 1, "items": {"count": 0, "total": 0, "per_page": 10}}}
+        return {"data": [], "pagination": {"last_visible_page": 1, "has_next_page": False, "current_page": 1, "items": {"count": 0, "total": 0, "per_page": 10}}}
 
 def _transform_jikan_anime(item: dict) -> dict:
     """Helper to transform the messy Jikan response into our clean schema"""
@@ -75,8 +75,25 @@ async def get_anime_by_id(mal_id: int) -> AnimeJikanResponse:
     
     data = await _fetch_with_retries(url)
     
+    # In case of rate limit mock data, data.get("data") is an empty list
+    jikan_data = data.get("data", {})
+    if isinstance(jikan_data, list):
+        if not jikan_data:
+            # If rate limited, just return a mock anime so the page doesn't crash
+            mock_anime = {
+                "mal_id": mal_id,
+                "title": "Unknown Anime (Rate Limited)",
+                "synopsis": "Jikan API rate limit exceeded.",
+                "image_url": None,
+                "episodes": 0,
+                "status": "Unknown",
+                "score": 0.0
+            }
+            return AnimeJikanResponse(data=mock_anime)
+        jikan_data = jikan_data[0]
+        
     transformed_data = {
-        "data": _transform_jikan_anime(data.get("data", {}))
+        "data": _transform_jikan_anime(jikan_data)
     }
     
     if redis_cache.client:
