@@ -19,6 +19,72 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+ 
+
+--- 
+## Frontend Folder Structure
+
+```
+frontend/
+├── app/
+│   ├── actions/
+│   │   └── auth.ts
+│   ├── anime/
+│   │   └── [id]/
+│   │       └── page.tsx
+│   ├── api/
+│   │   └── proxy/
+│   │       └── [...path]/
+│   │           └── route.ts
+│   ├── login/
+│   │   └── page.tsx
+│   ├── my-list/
+│   │   └── page.tsx
+│   ├── register/
+│   │   └── page.tsx
+│   ├── search/
+│   │   └── page.tsx
+│   ├── stats/
+│   │   └── page.tsx
+│   ├── error.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── not-found.tsx
+│   └── page.tsx
+├── components/
+│   ├── AnimeCard.tsx
+│   ├── AuthProvider.tsx
+│   ├── ListEntryCard.tsx
+│   ├── Navbar.tsx
+│   ├── QueryProvider.tsx
+│   └── Skeletons.tsx
+├── hooks/
+│   └── useDebounce.ts
+├── lib/
+│   └── api.ts
+├── public/
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── types/
+│   └── api.ts
+├── AGENTS.md
+├── CLAUDE.md
+├── eslint.config.mjs
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.mjs
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── README.md
+├── tsconfig.json
+└── tsconfig.tsbuildinfo
+```
 
 ## Learn More
 
