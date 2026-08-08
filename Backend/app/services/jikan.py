@@ -15,18 +15,27 @@ async def _fetch_with_retries(url: str, params: dict = None, retries: int = 3) -
     """Helper to fetch from Jikan with rate limit handling"""
     async with httpx.AsyncClient() as client:
         for attempt in range(retries):
-            response = await client.get(url, params=params)
-            
-            if response.status_code == 200:
-                return response.json()
-            elif response.status_code in [429, 500, 502, 503, 504]:
-                logger.warning(f"Jikan API error {response.status_code}. Retrying in {attempt + 1} seconds...")
-                await asyncio.sleep(attempt + 1)
-            else:
-                response.raise_for_status()
+            try:
+                # Add explicit 10-second timeout
+                response = await client.get(url, params=params, timeout=10.0)
                 
-        logger.error("Failed to fetch from Jikan API after multiple retries due to rate limits or errors")
-        raise HTTPException(status_code=502, detail="Upstream Jikan API is currently unavailable.")
+                if response.status_code == 200:
+                    return response.json()
+                elif response.status_code in [429, 500, 502, 503, 504]:
+                    logger.warning(f"Jikan API error {response.status_code}. Retrying in {attempt + 1} seconds...")
+                    await asyncio.sleep(attempt + 1)
+                else:
+                    response.raise_for_status()
+                    
+            except (httpx.TimeoutException, httpx.RequestError) as e:
+                logger.warning(f"Connection error/timeout on attempt {attempt + 1}: {str(e)}. Retrying in {attempt + 1} seconds...")
+                await asyncio.sleep(attempt + 1)
+            except json.JSONDecodeError as e:
+                logger.warning(f"JSON decode error on attempt {attempt + 1}: {str(e)}. Retrying in {attempt + 1} seconds...")
+                await asyncio.sleep(attempt + 1)
+                
+        logger.error(f"Failed to fetch from Jikan API after {retries} retries due to timeouts, rate limits, or errors.")
+        raise HTTPException(status_code=503, detail="Anime data source temporarily unavailable. Please try again later.")
 
 def _transform_jikan_anime(item: dict) -> dict:
     """Helper to transform the messy Jikan response into our clean schema"""
