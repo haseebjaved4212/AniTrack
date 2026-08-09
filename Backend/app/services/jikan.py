@@ -4,6 +4,8 @@ import json
 import logging
 from typing import Optional
 from fastapi import HTTPException
+import socket
+print(socket.getaddrinfo("api.jikan.moe", 443))
 
 from app.core.config import settings
 from app.db.redis import redis_cache
@@ -13,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 async def _fetch_with_retries(url: str, params: dict = None, retries: int = 3) -> dict:
     """Helper to fetch from Jikan with rate limit handling"""
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=10.0, transport=httpx.AsyncHTTPTransport(local_address="[IP_ADDRESS]")) as client:
         for attempt in range(retries):
             try:
                 # Add explicit 10-second timeout
