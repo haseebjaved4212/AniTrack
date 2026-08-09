@@ -22,12 +22,14 @@ async def _fetch_with_retries(url: str, params: dict = None, retries: int = 3) -
     async with AsyncSession() as session:
         for attempt in range(retries):
             try:
-                response = await session.get(
-                    url,
-                    params=params,
-                    timeout=10.0,
-                    impersonate="chrome"
-                )
+                # response = await session.get(
+                #     url,
+                #     params=params,
+                #     timeout=10.0,
+                #     impersonate="chrome"
+                # )
+                response = await session.get(url, params=params, timeout=10.0, impersonate="chrome")
+                logger.warning(f"Jikan responded with status {response.status_code}")
 
                 if response.status_code == 200:
                     return response.json()
@@ -37,13 +39,12 @@ async def _fetch_with_retries(url: str, params: dict = None, retries: int = 3) -
                 else:
                     response.raise_for_status()
 
-            except (curl_exceptions.RequestsError, asyncio.TimeoutError) as e:
-                logger.warning(f"Connection error/timeout on attempt {attempt + 1}: {str(e)}. Retrying in {attempt + 1} seconds...")
+            # except (curl_exceptions.RequestsError, asyncio.TimeoutError) as e:
+            #     logger.warning(f"Connection error/timeout on attempt {attempt + 1}: {str(e)}. Retrying in {attempt + 1} seconds...")
+            #     await asyncio.sleep(attempt + 1)
+            except Exception as e:
+                logger.warning(f"Attempt {attempt + 1} failed: {type(e).__name__}: {str(e)}. Retrying in {attempt + 1} seconds...")
                 await asyncio.sleep(attempt + 1)
-            except json.JSONDecodeError as e:
-                logger.warning(f"JSON decode error on attempt {attempt + 1}: {str(e)}. Retrying in {attempt + 1} seconds...")
-                await asyncio.sleep(attempt + 1)
-
         logger.error(f"Failed to fetch from Jikan API after {retries} retries due to timeouts, rate limits, or errors.")
         raise HTTPException(status_code=503, detail="Anime data source temporarily unavailable. Please try again later.")
 
